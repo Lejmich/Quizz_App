@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .ok-btn {
+            background-color: blue;
+            width: 100px;
+            border-radius: 8px;
+            color: white;
+        }
+        .cancel-btn {
+            background-color: transparent;
+            border-radius: 8px;
+            border: solid rgb(197, 187, 187);
+            color: rgb(129, 129, 233);
+        }
+        .question-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .input-answer {
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 5px;
+            width: 50%;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bienvenue sur ce quizz!</h1>
+    <button class="ok-btn" onclick="startQuiz()">Ok</button>
+
+    <!-- Conteneur caché au départ, s'affiche au début du quizz -->
+    <div id="quiz-container" style="display:none;">
+        <p>Vous allez répondre à 3 questions.</p>
+        <div class="question-container">
+            <!-- Indicateur de progression question -->
+            <p id="question-status">Question 1 sur 3</p>
+            <!-- Texte 1ère question -->
+            <p id="question-text">Quel est l'âge du capitaine ?</p>
+            <!-- Options de réponse -->
+            <div id="options">
+                <p>1. 42</p>
+                <p>2. 101</p>
+                <p>3. 18</p>
+            </div>
+            <!-- Champ de texte entrée réponse -->
+            <input type="text" class="input-answer" id="text-answer" placeholder="Tape le numéro de la bonne réponse (1, 2 ou 3)">
+            <div>
+                <!-- Bouton soumettre réponse, passe ensuite à la prochaine question -->
+                <button class="ok-btn" onclick="nextQuestion()">Ok</button>
+                <!-- Bouton d'annulation Quizz -->
+                <button class="cancel-btn" onclick="cancelQuiz()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tableau concernant les questions, options et la bonne réponse
+        const questions = [
+            { text: "Quel est l'âge du capitaine ?", options: ["42", "101", "18"], correctAnswer: "1" },
+            { text: "Quelle est la différence entre 2 pigeons ?", options: ["waf", "glups", "la longueur des pattes"], correctAnswer: "3" },
+            { text: "Qu'est-ce qui est jaune et qui attend ?", options: ["Jordanathan", "Homer Simpson", "Un citron pressé..."], correctAnswer: "1" },
+            { text: "Qui est the Best ?", options: ["Gabriel", "Anice", "Michel..."], correctAnswer: "3" }
+        ];
+
+        // Index question en cours
+        let currentQuestionIndex = 0;
+        // Variable pour stocker le score du joueur
+        let score = 0;
+
+        // Fonction pour démarrer le quizz
+        function startQuiz() {
+            // Masque le titre et bouton de démarrage
+            document.querySelector('h1').style.display = 'none'; // Cache le <h1>
+            document.querySelector('.ok-btn').style.display = 'none'; // Cache le bouton 'Ok'
+            // Affiche le conteneur du quizz
+            document.getElementById('quiz-container').style.display = 'block';
+            // Affiche première question
+            displayQuestion();
+        }
+
+        // Fonction pour afficher question actuelle
+        function displayQuestion() {
+            // Récupère question actuelle du tableau
+            const question = questions[currentQuestionIndex];
+            // Mise à jour l'état question et texte question
+            document.getElementById('question-status').innerText = `Question ${currentQuestionIndex + 1} sur ${questions.length}`;
+            document.getElementById('question-text').innerText = question.text;
+
+            // Mise à jour options
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = ''; // Effacer les anciennes options.
+            question.options.forEach((option, index) => {
+                // Ajoute chaque option en tant qu'élément du paragraphe
+                const p = document.createElement('p');
+                p.innerText = `${index + 1}. ${option}`;
+                optionsContainer.appendChild(p);
+            });
+
+            // Réinitialiser le placeholder sans numéro
+            const textAnswer = document.getElementById('text-answer');
+            textAnswer.value = '';  // Vider la saisie précédente
+            textAnswer.placeholder = "Tape le numéro de la bonne réponse (1, 2 ou 3)"; // Assurez-vous qu'il est réinitialisé
+        }
+
+        function nextQuestion() {
+            const textAnswer = document.getElementById('text-answer').value.trim();
+
+            if (!textAnswer) {
+                alert('Entre le numéro de la bonne réponse.');
+                return; // Arrêter l'exécution si aucune réponse n'est saisie.
+            }
+
+            // Comparer la réponse de l'utilisateur avec la réponse correcte
+            const question = questions[currentQuestionIndex];
+            if (textAnswer === question.correctAnswer) {
+                score++;
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(); // Afficher la prochaine question.
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            alert(`Quiz terminé ! Tu as eu ${score} bonne(s) réponse(s).`);
+            document.getElementById('quiz-container').style.display = 'none';
+            document.querySelector('h1').style.display = 'block';
+            document.querySelector('h1').innerText = 'Fin du quiz!';
+        }
+
+        function cancelQuiz() {
+            alert('Quiz annulé');
+            document.getElementById('quiz-container').style.display = 'none';
+            document.querySelector('h1').style.display = 'block';
+            document.querySelector('h1').innerText = 'Bienvenue sur ce quizz!';
+            currentQuestionIndex = 0; // Réinitialiser l'indice des questions.
+            score = 0; // Réinitialiser le score.
+        }
+    </script>
+</body>
+</html>
+
